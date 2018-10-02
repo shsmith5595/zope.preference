@@ -39,7 +39,7 @@
 
   <!--  Register User Preferences as a preference type -->
   <registerPreferenceGroupDirective
-      annotation_factory="zope.configuration.factory.UserPreferenceAnnotationFactory"
+      annotation_factory="zope.preference.factory.UserPreferenceAnnotationFactory"
       directive_name="userPreferenceGroup"
       group_id="UserPreferences"
       />
