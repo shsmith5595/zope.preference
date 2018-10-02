@@ -14,6 +14,7 @@
 """``apidoc:preferencesgroup`` ZCML directive interface
 
 """
+from zope.configuration.fields import GlobalObject
 from zope.interface import Interface
 from zope.configuration import fields
 from zope.schema import DottedName
@@ -61,3 +62,21 @@ class IPreferenceGroupDirective(Interface):
         required=False,
         default=False
         )
+
+
+class IRegisterPreferenceGroupDirective(Interface):
+    """Register a new preference group directive"""
+
+    annotation_factory = GlobalObject(title=u"The annotation factory for this preference group",
+                                      required=True)
+
+    directive_name = fields.TextLine(title=u"The name for this directive",
+                                     required=True)
+
+    group_id = OptionalDottedName(
+               title=u"Id",
+               description=u"""
+                   Id of the preference group used to access the group. The id should
+                   be a valid path in the preferences tree.""",
+               required=True,
+               )

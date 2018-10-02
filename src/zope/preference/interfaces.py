@@ -13,12 +13,27 @@
 ##############################################################################
 """User Preferences Interfaces
 """
+from zope.component import IFactory
+from zope.schema import NativeStringLine
+
 __docformat__ = "reStructuredText"
 
 import zope.interface
 import zope.schema
 from zope.configuration.fields import MessageID
 from zope.location.interfaces import ILocation
+
+
+class IPreferenceAnnotationFactory(zope.interface.Interface):
+    """A factory returning the object to be annotated for a preference group and the annotation key
+    """
+
+    def annotations():
+        """Returns an IAnnotations object to be used for this PreferenceGroup
+        """
+
+    __annotation_key__ = NativeStringLine(title=u'The annotation key for this PreferenceGroup',
+                                          required=True)
 
 
 class IPreferenceGroup(ILocation):
@@ -42,6 +57,11 @@ class IPreferenceGroup(ILocation):
         description=u"The id of the group.",
         required=True)
 
+    __annotation_factory__ = zope.schema.Object(IPreferenceAnnotationFactory,
+        title=u"Annotation Factory",
+        description=u"The annotation factory for this preference group.",
+        requied=True
+    )
     __schema__ = zope.schema.InterfaceField(
         title=u"Schema",
         description=u"Schema describing the preferences of the group.",

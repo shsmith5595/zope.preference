@@ -21,10 +21,8 @@ import zope.interface
 import zope.component
 from zope.schema import getFields
 from zope.security.checker import CheckerPublic, Checker
-from zope.security.management import getInteraction
 from zope.traversing.interfaces import IContainmentRoot
 from zope.location import Location
-from zope.annotation.interfaces import IAnnotations
 
 import zope.component.hooks
 from zope.container.interfaces import IReadContainer
@@ -32,8 +30,6 @@ from zope.container.interfaces import IReadContainer
 from zope.preference.interfaces import IPreferenceGroup
 from zope.preference.interfaces import IPreferenceCategory
 from zope.preference.interfaces import IDefaultPreferenceProvider
-
-pref_key = 'zope.app.user.UserPreferences'
 
 
 @zope.interface.implementer(IPreferenceGroup, IReadContainer)
@@ -48,13 +44,15 @@ class PreferenceGroup(Location):
     __schema__ = None
     __title__ = None
     __description__ = None
+    __annotation_factory__ = None
 
-    def __init__(self, id, schema=None, title=u'', description=u'',
+    def __init__(self, id, annotation_factory, schema=None, title=u'', description=u'',
                  isCategory=False):
         self.__id__ = id
         self.__schema__ = schema
         self.__title__ = title
         self.__description__ = description
+        self.__annotation_factory__ = annotation_factory
 
         # The last part of the id is the name.
         self.__name__ = id.split('.')[-1]
@@ -175,9 +173,8 @@ class PreferenceGroup(Location):
 
     @property
     def data(self):
-        # TODO: what if we have multiple participations?
-        principal = getInteraction().participations[0].principal
-        ann = zope.component.getMultiAdapter((principal, self), IAnnotations)
+        ann = self.__annotation_factory__.annotations
+        pref_key = self.__annotation_factory__.__annotation_key__
 
         # If no preferences exist, create the root preferences object.
         if  ann.get(pref_key) is None:

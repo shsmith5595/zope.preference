@@ -13,6 +13,12 @@
         handler=".metaconfigure.preferenceGroup"
         />
 
+    <meta:directive
+        name="registerPreferenceGroupDirective"
+        schema=".metadirectives.IRegisterPreferenceGroupDirective"
+        handler=".metaconfigure.registerPreferenceGroup"
+        />
+
   </meta:directives>
 
 </configure>
