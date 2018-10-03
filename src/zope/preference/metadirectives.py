@@ -36,6 +36,11 @@ class IPreferenceGroupDirective(Interface):
         required=False,
         )
 
+    annotation_factory = fields.GlobalObject(title=u"Annotation factory",
+                                             description=u"The annotation factory for this preference group.",
+                                             required=False
+                                             )
+
     schema = fields.GlobalInterface(
         title=u"Schema",
         description=u"Schema of the preference group used defining the "

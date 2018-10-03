@@ -21,9 +21,9 @@ from zope.preference.interfaces import IPreferenceGroup
 from zope.preference.preference import PreferenceGroup
 
 
-def preferenceGroup(_context, id=None, schema=None,
+def preferenceGroup(_context, annotation_factory=None, id=None, schema=None,
                     title=u'', description=u'', category=False):
     if id is None:
         id = ''
-    group = PreferenceGroup(id, schema, title, description, category)
+    group = PreferenceGroup(id, annotation_factory, schema, title, description, category)
     utility(_context, IPreferenceGroup, group, name=id)
