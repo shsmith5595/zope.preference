@@ -29,11 +29,14 @@ from zope.annotation.interfaces import IAnnotations
 import zope.component.hooks
 from zope.container.interfaces import IReadContainer
 
+from zope.preference.factory import UserPreferenceAnnotationFactory
+from zope.preference.factory import USER_PREFERENCE_ANNOTATION_KEY
 from zope.preference.interfaces import IPreferenceGroup
 from zope.preference.interfaces import IPreferenceCategory
 from zope.preference.interfaces import IDefaultPreferenceProvider
 
-pref_key = 'zope.app.user.UserPreferences'
+# BWC
+pref_key = USER_PREFERENCE_ANNOTATION_KEY
 
 
 @zope.interface.implementer(IPreferenceGroup, IReadContainer)
@@ -49,12 +52,15 @@ class PreferenceGroup(Location):
     __title__ = None
     __description__ = None
 
-    def __init__(self, id, schema=None, title=u'', description=u'',
+    def __init__(self, id, annotation_factory=None, schema=None, title=u'', description=u'',
                  isCategory=False):
         self.__id__ = id
         self.__schema__ = schema
         self.__title__ = title
         self.__description__ = description
+
+        # BWC
+        self.__annotation_factory__ = annotation_factory if annotation_factory else UserPreferenceAnnotationFactory()
 
         # The last part of the id is the name.
         self.__name__ = id.split('.')[-1]
@@ -241,7 +247,10 @@ class preferencesNamespace(object):
         self.context = ob
 
     def traverse(self, name, ignore):
-        rootGroup = zope.component.getUtility(IPreferenceGroup)
+        rootGroup = IPreferenceGroup(self.context, None)
+        # BWC
+        if rootGroup is None:
+            rootGroup = zope.component.getUtility(IPreferenceGroup)
         rootGroup = rootGroup.__bind__(self.context)
         rootGroup.__name__ = '++preferences++'
         zope.interface.alsoProvides(rootGroup, IContainmentRoot)
