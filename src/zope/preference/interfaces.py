@@ -17,8 +17,23 @@ __docformat__ = "reStructuredText"
 
 import zope.interface
 import zope.schema
+from zope.annotation import IAnnotations
 from zope.configuration.fields import MessageID
 from zope.location.interfaces import ILocation
+
+
+class IPreferenceAnnotationFactory(zope.interface.Interface):
+    """A factory providing the object to be annotated for a preference group and the annotation key
+    """
+
+    annotations = zope.schema.Object(IAnnotations,
+                                     title=u"Annotation object",
+                                     description=u"The annotation object to be used for this Preference Group.",
+                                     required=True)
+
+    annotation_key = zope.schema.NativeStringLine(title=u"Annotation key",
+                                                  description=u"The annotation key for this Preference Group.",
+                                                  required=True)
 
 
 class IPreferenceGroup(ILocation):
@@ -42,6 +57,11 @@ class IPreferenceGroup(ILocation):
         description=u"The id of the group.",
         required=True)
 
+    __annotation_factory__ = zope.schema.Object(IPreferenceAnnotationFactory,
+        title=u"Annotation Factory",
+        description=u"The annotation factory for this preference group.",
+        required=False)
+
     __schema__ = zope.schema.InterfaceField(
         title=u"Schema",
         description=u"Schema describing the preferences of the group.",
@@ -63,7 +83,7 @@ class IPreferenceCategory(zope.interface.Interface):
 
     Objects providing this interface serve as groups of preference
     groups. This allows UIs to distinguish between high- and low-level
-    prefernce groups.
+    preference groups.
     """
 
 
