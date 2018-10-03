@@ -51,7 +51,7 @@ class DefaultPreferenceGroup(preference.PreferenceGroup):
     def __init__(self, group, provider):
         self.provider = provider
         super(DefaultPreferenceGroup, self).__init__(
-            group.__id__, group.__schema__,
+            group.__id__, group.__annotation_factory__, group.__schema__,
             group.__title__, group.__description__)
 
         # Make sure that we also mark the default group as category if the
