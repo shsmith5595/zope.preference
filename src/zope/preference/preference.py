@@ -94,7 +94,7 @@ class PreferenceGroup(Location):
         group = zope.component.queryUtility(IPreferenceGroup, id, default)
         if group is default:
             return default
-        if not isinstance(getattr(group, '__annotation_factory__'), self.__annotation_factory__):
+        if not isinstance(getattr(group, '__annotation_factory__'), self.__annotation_factory__.__class__):
             return None
         return group.__bind__(self)
 
@@ -106,7 +106,7 @@ class PreferenceGroup(Location):
                 if id != self.__id__ and \
                    id.startswith(self.__id__) and \
                    id[cutoff:].find('.') == -1 and \
-                   isinstance(group.__annotation_factory__, self.__annotation_factory__)]
+                   isinstance(group.__annotation_factory__, self.__annotation_factory__.__class__)]
 
     def __getitem__(self, key):
         """See zope.container.interfaces.IReadContainer"""
