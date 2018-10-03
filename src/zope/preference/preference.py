@@ -94,6 +94,8 @@ class PreferenceGroup(Location):
         group = zope.component.queryUtility(IPreferenceGroup, id, default)
         if group is default:
             return default
+        if getattr(group, '__annotation_factory__') != self.__annotation_factory__:
+            return None
         return group.__bind__(self)
 
     def items(self):
@@ -103,7 +105,8 @@ class PreferenceGroup(Location):
                 for id, group in utilities
                 if id != self.__id__ and \
                    id.startswith(self.__id__) and \
-                   id[cutoff:].find('.') == -1]
+                   id[cutoff:].find('.') == -1 and \
+                   group.__annotation_factory__ == self.__annotation_factory__]
 
     def __getitem__(self, key):
         """See zope.container.interfaces.IReadContainer"""
@@ -182,13 +185,13 @@ class PreferenceGroup(Location):
     @property
     def data(self):
         # TODO: what if we have multiple participations?
-        principal = getInteraction().participations[0].principal
-        ann = zope.component.getMultiAdapter((principal, self), IAnnotations)
+        ann = self.__annotation_factory__.annotations
+        ann_key = self.__annotation_factory__.annotation_key
 
         # If no preferences exist, create the root preferences object.
-        if  ann.get(pref_key) is None:
-            ann[pref_key] = OOBTree()
-        prefs = ann[pref_key]
+        if  ann.get(ann_key) is None:
+            ann[ann_key] = OOBTree()
+        prefs = ann[ann_key]
 
         # If no entry for the group exists, create a new entry.
         if self.__id__ not in prefs.keys():
